@@ -1,5 +1,6 @@
 import trafilatura
 
+from .clean import clean_text
 
 def fetch_html(url: str) -> str:
     """
@@ -42,3 +43,19 @@ def fetch_web_text(url: str, output_format: str = "markdown") -> str:
         raise ValueError(f"Failed to extract content from {url}")
 
     return extracted
+
+
+
+def fetch_and_clean(url: str, output_format: str = "markdown") -> str:
+    """
+    Fetch, extract, and clean web content in one step.
+
+    Args:
+        url: URL to fetch
+        output_format: Output format for extraction
+
+    Returns:
+        Cleaned extracted text
+    """
+    text = fetch_web_text(url, output_format=output_format)
+    return clean_text(text)
