@@ -1,182 +1,157 @@
 # webtools — Roadmap
 
-A lightweight personal toolkit for fetching, extracting, and preparing web content for AI workflows.
+A lightweight toolkit for turning web pages into clean, usable text.
 
 ---
 
 ## 🎯 Vision
 
-`webtools` is a minimal, composable "web ingestion layer" designed to:
+`webtools` is a minimal “web ingestion layer” designed to:
 
 - Reduce friction when working with web content
-- Provide clean, ready-to-use inputs for AI tools
-- Standardize how I fetch, clean, and process content across projects
-
-Primary use cases:
-
-- Job scraping (skim-job-ai)
-- Article summarization (drdk-ai, docsum)
-- Dataset creation and RAG pipelines (iso-ask)
-- General automation and experimentation
+- Provide clean, ready-to-use inputs for downstream processing
+- Standardize how content is fetched and prepared across projects
 
 ---
 
-## 🧱 Design Principles
+## ✅ Current State (v0.2)
 
-- **Minimal first** — only add features when needed
-- **Composable functions** — small building blocks over monolithic functions
-- **No "utils dumping ground"** — organize by capability
-- **Local-first friendly** — no unnecessary external dependencies
-- **Fast iteration** — optimized for real-world usage, not theoretical completeness
+The package now provides a complete pipeline:
 
----
+```
 
-## ✅ Current State (v0.1)
+URL → fetch → extract → clean → prepare → chunk
 
-### fetch.py
+```
 
-- `fetch_web_text(url: str, output_format="markdown") -> str`
+### Core functions
 
-Core functionality:
+#### Fetch + extract
 
-- Fetch URL
-- Extract main content via `trafilatura`
-- Return clean text
+- `fetch_html(url)` → raw HTML
+- `fetch_web_text(url)` → extracted readable content
 
----
+#### Composed helpers
 
-## 🧭 Phase 1 — Foundation (Next Steps)
+- `fetch_and_clean(url)`
+- `fetch_and_prepare(url, max_chars=None)`
 
-Goal: Build a minimal but flexible base
+#### Text processing
 
-### fetch.py
+- `clean_text(text)`
+- `truncate_text(text, max_chars)`
 
-- [ ] `fetch_html(url: str) -> str`
-  - Raw HTML download
+#### Chunking
 
-### clean.py
+- `chunk_text(text, max_chars, preserve_sentences=False)`
+  - Simple chunking
+  - Paragraph-aware chunking (when enabled)
 
-- [ ] `clean_text(text: str) -> str`
-  - Normalize whitespace
-  - Remove noise artifacts
+#### Utilities
 
-- [ ] `truncate_text(text: str, max_chars: int) -> str`
-  - Prepare text for LLM input
+- `is_valid_url(url)`
 
 ---
 
-## 🧭 Phase 2 — Better Extraction
+## 🧭 Design Principles
 
-Goal: Improve usefulness for real-world data workflows
-
-### extract.py (new)
-
-- [ ] `extract_text(html: str, output_format="markdown") -> str`
-- [ ] `extract_metadata(html: str) -> dict`
-  - title, author, date, etc.
-
-### fetch.py
-
-- [ ] Refactor `fetch_web_text` to:
-  - `fetch_html` → `extract_text`
+- ✅ **Minimal first** — add features only when needed
+- ✅ **Composable functions** — small building blocks
+- ✅ **Explicit behavior** — no hidden data loss
+- ✅ **No scope creep** — stay focused on web → text
+- ✅ **Built from real usage** — evolve from actual needs
 
 ---
 
-## 🧭 Phase 3 — Data Workflows (RAG / pipelines)
+## 🛠️ Real Usage Context
 
-Goal: Enable batch processing and dataset creation
+This package is used in:
 
-### batch.py (new)
-
-- [ ] `fetch_many(urls: list[str]) -> list[str]`
-- [ ] `fetch_and_extract(urls: list[str]) -> list[str]`
-
-Optional:
-
-- [ ] `fetch_to_dataset(urls: list[str]) -> list[dict]`
+- Job scraping tools (skim-job-ai)
+- Article summarization tools (drdk-ai, docsum)
+- Data preparation for LLM workflows
+- General automation scripts
 
 ---
 
-## 🧭 Phase 4 — Reliability Layer
+## 🧠 How the project evolves
 
-Goal: Make scraping more robust in real usage
+Instead of fixed phases, development follows:
 
-### fetch.py
+> **Build → use → observe → refine**
 
-- [ ] `fetch_with_retry(url: str, retries=3)`
-- [ ] Add error handling patterns
+New functionality is added only when:
 
-### (optional later)
-
-- [ ] caching layer
-  - disk or in-memory caching
+- repeated friction appears
+- something cannot be solved cleanly with existing functions
 
 ---
 
-## 🧭 Phase 5 — URL & Link Utilities
+## 🔮 Possible future improvements (only if needed)
 
-Goal: Support crawling / filtering workflows
+These are **optional directions**, not commitments:
 
-### links.py (new)
+### Better chunking
 
-- [ ] `is_valid_url(url: str) -> bool`
-- [ ] `normalize_url(url: str) -> str`
-- [ ] `extract_domain(url: str) -> str`
-- [ ] `filter_links(links: list[str], domain: str) -> list[str]`
+- Sentence-aware splitting (beyond paragraphs)
+- Overlap between chunks
 
----
+### Metadata extraction
 
-## 🧭 Phase 6 — Advanced (Only if needed)
+- title, author, publish date
 
-Goal: Add sophistication without killing simplicity
+### URL utilities
 
-### ideas
+- domain extraction
+- URL normalization
 
-- [ ] language detection
-- [ ] content deduplication
-- [ ] HTML → Markdown normalization improvements
-- [ ] streaming / async fetch (only if needed)
+### Reliability
+
+- retry logic
+- caching
 
 ---
 
 ## 🚫 Non-Goals (Important)
 
-To avoid scope creep:
+To avoid turning this into a “utils dump”:
 
-- No general-purpose "utils" dumping
-- No full crawler framework
-- No database layer
-- No overengineering early
-
----
-
-## 🧠 Long-Term Direction
-
-`webtools` becomes:
-
-→ A stable internal dependency used across:
-
-- microsteps-ai
-- skim-job-ai
-- drdk-ai
-- iso-ask
-
-→ A consistent way to:
-
-- fetch → clean → prepare → feed into LLMs
+- ❌ No full crawling framework
+- ❌ No database layer
+- ❌ No LLM-specific logic
+- ❌ No premature abstraction
 
 ---
 
-## 🧪 Development Style
+## 🧩 Long-term role
 
-- Build → use → refine
-- Add features only after real usage
-- Track improvements via FEEDBACK.md (when relevant)
+`webtools` is intended to become:
+
+> ✅ **A stable, reusable dependency used across projects**
+
+Providing a consistent way to:
+
+```
+
+fetch → clean → prepare → process
+
+```
+
+---
+
+## 📝 Development Style
+
+- Build small, test in real usage
+- Prefer clarity over cleverness
+- Add functionality only when necessary
+- Track learnings in `FEEDBACK.md`
 
 ---
 
 ## ✅ Summary
 
-This is not meant to be a "big library".
+This is not a “big library”.
 
-It is a **small, reliable, evolving toolkit** that reduces friction across projects and compounds in value over time.
+It is a:
+
+> **Small, reliable toolkit that removes friction and compounds in value over time.**
